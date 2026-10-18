@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gpu-test
+  namespace: llm
+spec:
+  runtimeClassName: nvidia
+  restartPolicy: Never
+  containers:
+    - name: cuda-test
+      image: nvcr.io/nvidia/cuda@sha256:133c78a0575303be34164d0b90137a042172bdf60696af01a3c424ab402d86e2
+      command: ["nvidia-smi"]
+      resources:
+        limits:
+          nvidia.com/gpu: 1
