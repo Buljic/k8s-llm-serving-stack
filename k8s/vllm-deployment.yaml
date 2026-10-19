@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm-qwen
+  namespace: llm
+  labels:
+    app: vllm-qwen
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: vllm-qwen
+  template:
+    metadata:
+      labels:
+        app: vllm-qwen
+    spec:
+      runtimeClassName: nvidia
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai@sha256:befccf0e7e4089aa23926bb6f887a85c0d46c2a99e6de5c5ffdf5cb7957c5b34
+          args:
+            - --model
+            - /models/qwen3-0.6b
+            - --served-model-name
+            - qwen3-0.6b
+            - --max-model-len
+            - "8192"
+            - --gpu-memory-utilization
+            - "0.85"
+            - --host
+            - 0.0.0.0
+            - --port
+            - "8000"
+          env:
+            - name: HF_HUB_OFFLINE
+              value: "1"
+            - name: TRANSFORMERS_OFFLINE
+              value: "1"
+          ports:
+            - name: http
+              containerPort: 8000
+          resources:
+            requests:
+              cpu: "4"
+              memory: 16Gi
+            limits:
+              cpu: "8"
+              memory: 32Gi
+              nvidia.com/gpu: 1
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+            failureThreshold: 60
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 15
+            failureThreshold: 6
+          volumeMounts:
+            - name: models
+              mountPath: /models
+              readOnly: true
+      volumes:
+        - name: models
+          hostPath:
+            path: /var/lib/llm-serving-infra/models
+            type: Directory

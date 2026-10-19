@@ -24,3 +24,7 @@ Notes and deviations:
   trade-off on a shared workstation, not a production recommendation.
 - MIG status on this GPU reads `N/A` in nvidia-smi. The RTX 3090 has no MIG
   hardware support.
+
+## Phase 2, vLLM: in progress
+
+Manifests written; container image pull in progress at the time of this commit.
