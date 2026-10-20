@@ -25,6 +25,22 @@ Notes and deviations:
 - MIG status on this GPU reads `N/A` in nvidia-smi. The RTX 3090 has no MIG
   hardware support.
 
-## Phase 2, vLLM: in progress
+## Phase 2, vLLM
 
-Manifests written; container image pull in progress at the time of this commit.
+- Deployment `vllm-qwen` (k8s/vllm-deployment.yaml), image
+  vllm/vllm-openai:v0.32.0 pinned by digest, Qwen/Qwen3-0.6B weights from a
+  hostPath volume, runtimeClassName nvidia, one nvidia.com/gpu, startup +
+  readiness + liveness probes on /health, memory limits 16Gi request / 32Gi cap.
+- Service `vllm-qwen` type NodePort 30800.
+- Verification, 2026-10-20: `curl localhost:30800/v1/chat/completions` from the
+  host returned generated tokens; usage reported 64 completion tokens;
+  nvidia-smi showed 20,727 MiB used and 99 percent utilization during the
+  request. Pod startup took about two minutes including CUDA graph capture.
+
+## Phase 3, production-style stack: in progress
+
+Helm values for the vLLM production stack chart 0.1.13 (commit
+e8cb4959ebfa333714ef468a3aefe158a65a09e6) written; router pinned to
+lmcache/lmstack-router v0.1.13 by digest; kube-prometheus-stack bundled as the
+monitoring layer. Deploy script patches engine probes the chart does not
+render.
