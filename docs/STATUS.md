@@ -3,6 +3,8 @@
 What is done, per phase. Every claim below was checked with a
 command on the lab machine; anything I did not check is labeled.
 
+Last full verification pass: 2026-11-02 evening (final smoke test green).
+
 ## Phase 1, cluster and GPU
 
 - k3s v1.36.5+k3s1 on Fedora 44, single control-plane node named `fedora`.
@@ -23,7 +25,7 @@ Notes and deviations:
   eviction-hard at 2 GiB free absolute, image GC at 98/96 percent. This is a lab
   trade-off on a shared workstation, not a production recommendation.
 - MIG status on this GPU reads `N/A` in nvidia-smi. The RTX 3090 has no MIG
-  hardware support.
+  hardware support; see docs/GPU_SHARING.md for the full explanation.
 
 ## Phase 2, vLLM
 
@@ -36,6 +38,34 @@ Notes and deviations:
   host returned generated tokens; usage reported 64 completion tokens;
   nvidia-smi showed 20,727 MiB used and 99 percent utilization during the
   request. Pod startup took about two minutes including CUDA graph capture.
+
+## Phase 6, GPU sharing
+
+- MIG: not supported by the RTX 3090. Evidence and explanation in
+  docs/GPU_SHARING.md (`nvidia-smi mig -lgip` returns "No MIG-supported
+  devices found"). No substitute was faked.
+- Time-slicing: device plugin config with replicas 2 exposes
+  `nvidia.com/gpu.shared: 2` (k8s/device-plugin-timesliced.yaml). Two
+  vLLM instances at 0.35 utilization each ran on the one physical GPU;
+  `nvidia-smi` showed both compute processes on device 0, 12.8 GB used.
+- Measured comparison (concurrency 16, 96 requests, 256 max tokens):
+  single instance 4,439.4 tok/s, TPOT p50 3.4 ms; sliced pair 2,375.6
+  tok/s, TPOT p50 6.5 ms. Sharing halves throughput and doubles TPOT.
+- Experiment fully reverted; node back to `nvidia.com/gpu: 1`, engine
+  serving.
+
+## Stability incidents worth remembering
+
+- Simulated same-host agent node (see docs/SIMULATED_NODE.md) wedged the
+  kubelet device manager afterwards: the device plugin could not
+  re-register and the node reported zero GPUs while `nvidia-smi` showed the
+  card idle. A k3s restart cleared it; pods with pre-churn pod IPs then
+  needed recreation to regain API connectivity. All recovered; the
+  sequence is recorded here because it cost real debugging time.
+- The same episode left CoreDNS, metrics-server and traefik with stale pod
+  IPs; each needed one pod recreation. After that, every pod in the cluster
+  reports healthy, `kubectl top` works, Grafana panel queries return live
+  frames, and the smoke test passes end to end. Final pass: 2026-11-02.
 
 ## Phase 4, monitoring
 

@@ -1,0 +1,811 @@
+{
+  "provenance": "live",
+  "run": {
+    "timestamp_utc": "2026-11-02T19:30:09+00:00",
+    "base": "http://localhost:30080/v1",
+    "model": "qwen3-0.6b",
+    "concurrency": 16,
+    "requests_offered": 96,
+    "max_tokens": 256,
+    "prompt_set": "scripts/benchmark.py PROMPTS (8 fixed prompts)",
+    "wall_time_s": 5.356
+  },
+  "summary": {
+    "requests_completed": 96,
+    "requests_failed": 0,
+    "ttft": {
+      "n": 96,
+      "p50_s": 0.016613,
+      "p95_s": 0.041513,
+      "p99_s": 0.041965,
+      "mean_s": 0.021896
+    },
+    "tpot": {
+      "n": 96,
+      "p50_s": 0.003419,
+      "p95_s": 0.003446,
+      "p99_s": 0.003449,
+      "mean_s": 0.003407
+    },
+    "latency": {
+      "n": 96,
+      "p50_s": 0.891748,
+      "p95_s": 0.914349,
+      "p99_s": 0.915121,
+      "mean_s": 0.862602
+    },
+    "output_tokens_total": 23778,
+    "throughput_output_tok_s": 4439.409
+  },
+  "errors": [],
+  "requests": [
+    {
+      "request_id": "a8f2f41c",
+      "ttft_s": 0.041491,
+      "tpot_s": 0.003346,
+      "latency_s": 0.667202,
+      "completion_tokens": 188,
+      "prompt_index": 5
+    },
+    {
+      "request_id": "b047b41d",
+      "ttft_s": 0.040912,
+      "tpot_s": 0.00335,
+      "latency_s": 0.667324,
+      "completion_tokens": 188,
+      "prompt_index": 5
+    },
+    {
+      "request_id": "d606ef79",
+      "ttft_s": 0.038682,
+      "tpot_s": 0.003407,
+      "latency_s": 0.907375,
+      "completion_tokens": 256,
+      "prompt_index": 6
+    },
+    {
+      "request_id": "675b3fbf",
+      "ttft_s": 0.041777,
+      "tpot_s": 0.003414,
+      "latency_s": 0.912405,
+      "completion_tokens": 256,
+      "prompt_index": 1
+    },
+    {
+      "request_id": "1f90faf2",
+      "ttft_s": 0.041558,
+      "tpot_s": 0.003416,
+      "latency_s": 0.912598,
+      "completion_tokens": 256,
+      "prompt_index": 2
+    },
+    {
+      "request_id": "89c91951",
+      "ttft_s": 0.041515,
+      "tpot_s": 0.003417,
+      "latency_s": 0.912735,
+      "completion_tokens": 256,
+      "prompt_index": 3
+    },
+    {
+      "request_id": "d644a968",
+      "ttft_s": 0.045532,
+      "tpot_s": 0.003419,
+      "latency_s": 0.917307,
+      "completion_tokens": 256,
+      "prompt_index": 0
+    },
+    {
+      "request_id": "da790815",
+      "ttft_s": 0.041512,
+      "tpot_s": 0.00342,
+      "latency_s": 0.913583,
+      "completion_tokens": 256,
+      "prompt_index": 4
+    },
+    {
+      "request_id": "078607c3",
+      "ttft_s": 0.040815,
+      "tpot_s": 0.003421,
+      "latency_s": 0.913158,
+      "completion_tokens": 256,
+      "prompt_index": 4
+    },
+    {
+      "request_id": "7455f81d",
+      "ttft_s": 0.041147,
+      "tpot_s": 0.003423,
+      "latency_s": 0.914065,
+      "completion_tokens": 256,
+      "prompt_index": 1
+    },
+    {
+      "request_id": "ef4693f9",
+      "ttft_s": 0.041086,
+      "tpot_s": 0.003423,
+      "latency_s": 0.913999,
+      "completion_tokens": 256,
+      "prompt_index": 2
+    },
+    {
+      "request_id": "79525a34",
+      "ttft_s": 0.041044,
+      "tpot_s": 0.003425,
+      "latency_s": 0.914516,
+      "completion_tokens": 256,
+      "prompt_index": 3
+    },
+    {
+      "request_id": "d5df17a7",
+      "ttft_s": 0.041469,
+      "tpot_s": 0.003425,
+      "latency_s": 0.914868,
+      "completion_tokens": 256,
+      "prompt_index": 0
+    },
+    {
+      "request_id": "bdc38506",
+      "ttft_s": 0.041628,
+      "tpot_s": 0.003425,
+      "latency_s": 0.915006,
+      "completion_tokens": 256,
+      "prompt_index": 7
+    },
+    {
+      "request_id": "94c91aca",
+      "ttft_s": 0.040938,
+      "tpot_s": 0.003425,
+      "latency_s": 0.914401,
+      "completion_tokens": 256,
+      "prompt_index": 6
+    },
+    {
+      "request_id": "098ceb2e",
+      "ttft_s": 0.040921,
+      "tpot_s": 0.003425,
+      "latency_s": 0.914332,
+      "completion_tokens": 256,
+      "prompt_index": 7
+    },
+    {
+      "request_id": "7214fbab",
+      "ttft_s": 0.014741,
+      "tpot_s": 0.003368,
+      "latency_s": 0.799551,
+      "completion_tokens": 234,
+      "prompt_index": 0
+    },
+    {
+      "request_id": "886313b3",
+      "ttft_s": 0.013875,
+      "tpot_s": 0.003386,
+      "latency_s": 0.877403,
+      "completion_tokens": 256,
+      "prompt_index": 1
+    },
+    {
+      "request_id": "2c60dcf8",
+      "ttft_s": 0.025718,
+      "tpot_s": 0.003338,
+      "latency_s": 0.636534,
+      "completion_tokens": 184,
+      "prompt_index": 5
+    },
+    {
+      "request_id": "0e6a3c0b",
+      "ttft_s": 0.023035,
+      "tpot_s": 0.003341,
+      "latency_s": 0.634429,
+      "completion_tokens": 184,
+      "prompt_index": 5
+    },
+    {
+      "request_id": "0e5a3781",
+      "ttft_s": 0.016291,
+      "tpot_s": 0.003381,
+      "latency_s": 0.878376,
+      "completion_tokens": 256,
+      "prompt_index": 2
+    },
+    {
+      "request_id": "5c55ed8f",
+      "ttft_s": 0.023927,
+      "tpot_s": 0.003397,
+      "latency_s": 0.890108,
+      "completion_tokens": 256,
+      "prompt_index": 3
+    },
+    {
+      "request_id": "aab7ca8d",
+      "ttft_s": 0.023411,
+      "tpot_s": 0.003399,
+      "latency_s": 0.89012,
+      "completion_tokens": 256,
+      "prompt_index": 4
+    },
+    {
+      "request_id": "d9425e57",
+      "ttft_s": 0.025146,
+      "tpot_s": 0.003399,
+      "latency_s": 0.891929,
+      "completion_tokens": 256,
+      "prompt_index": 6
+    },
+    {
+      "request_id": "975398ec",
+      "ttft_s": 0.024754,
+      "tpot_s": 0.0034,
+      "latency_s": 0.89183,
+      "completion_tokens": 256,
+      "prompt_index": 7
+    },
+    {
+      "request_id": "b79a516f",
+      "ttft_s": 0.024202,
+      "tpot_s": 0.003402,
+      "latency_s": 0.891665,
+      "completion_tokens": 256,
+      "prompt_index": 0
+    },
+    {
+      "request_id": "d42a8f54",
+      "ttft_s": 0.023638,
+      "tpot_s": 0.003403,
+      "latency_s": 0.891423,
+      "completion_tokens": 256,
+      "prompt_index": 2
+    },
+    {
+      "request_id": "05b8fdeb",
+      "ttft_s": 0.023816,
+      "tpot_s": 0.003404,
+      "latency_s": 0.891933,
+      "completion_tokens": 256,
+      "prompt_index": 1
+    },
+    {
+      "request_id": "0e976f1b",
+      "ttft_s": 0.023067,
+      "tpot_s": 0.003406,
+      "latency_s": 0.89162,
+      "completion_tokens": 256,
+      "prompt_index": 4
+    },
+    {
+      "request_id": "c9b24a6e",
+      "ttft_s": 0.022792,
+      "tpot_s": 0.003406,
+      "latency_s": 0.891296,
+      "completion_tokens": 256,
+      "prompt_index": 7
+    },
+    {
+      "request_id": "9ae6a0f0",
+      "ttft_s": 0.022965,
+      "tpot_s": 0.003408,
+      "latency_s": 0.892114,
+      "completion_tokens": 256,
+      "prompt_index": 6
+    },
+    {
+      "request_id": "6bdba4b5",
+      "ttft_s": 0.023341,
+      "tpot_s": 0.003408,
+      "latency_s": 0.892503,
+      "completion_tokens": 256,
+      "prompt_index": 3
+    },
+    {
+      "request_id": "300a44ed",
+      "ttft_s": 0.01568,
+      "tpot_s": 0.003403,
+      "latency_s": 0.883404,
+      "completion_tokens": 256,
+      "prompt_index": 0
+    },
+    {
+      "request_id": "4b4e73b5",
+      "ttft_s": 0.01538,
+      "tpot_s": 0.003406,
+      "latency_s": 0.883987,
+      "completion_tokens": 256,
+      "prompt_index": 1
+    },
+    {
+      "request_id": "dc15ea03",
+      "ttft_s": 0.015988,
+      "tpot_s": 0.003405,
+      "latency_s": 0.884388,
+      "completion_tokens": 256,
+      "prompt_index": 2
+    },
+    {
+      "request_id": "61c76369",
+      "ttft_s": 0.015098,
+      "tpot_s": 0.003408,
+      "latency_s": 0.884141,
+      "completion_tokens": 256,
+      "prompt_index": 3
+    },
+    {
+      "request_id": "85b8fd80",
+      "ttft_s": 0.016183,
+      "tpot_s": 0.003362,
+      "latency_s": 0.634837,
+      "completion_tokens": 185,
+      "prompt_index": 5
+    },
+    {
+      "request_id": "7265052f",
+      "ttft_s": 0.025566,
+      "tpot_s": 0.003378,
+      "latency_s": 0.64041,
+      "completion_tokens": 183,
+      "prompt_index": 5
+    },
+    {
+      "request_id": "1c92a5a6",
+      "ttft_s": 0.01724,
+      "tpot_s": 0.003389,
+      "latency_s": 0.881309,
+      "completion_tokens": 256,
+      "prompt_index": 4
+    },
+    {
+      "request_id": "9aa061c4",
+      "ttft_s": 0.02377,
+      "tpot_s": 0.003407,
+      "latency_s": 0.86862,
+      "completion_tokens": 249,
+      "prompt_index": 0
+    },
+    {
+      "request_id": "f87d297a",
+      "ttft_s": 0.01521,
+      "tpot_s": 0.003405,
+      "latency_s": 0.883475,
+      "completion_tokens": 256,
+      "prompt_index": 6
+    },
+    {
+      "request_id": "ee784631",
+      "ttft_s": 0.024159,
+      "tpot_s": 0.003425,
+      "latency_s": 0.897533,
+      "completion_tokens": 256,
+      "prompt_index": 7
+    },
+    {
+      "request_id": "54143267",
+      "ttft_s": 0.02337,
+      "tpot_s": 0.003427,
+      "latency_s": 0.897138,
+      "completion_tokens": 256,
+      "prompt_index": 1
+    },
+    {
+      "request_id": "e8765a51",
+      "ttft_s": 0.022956,
+      "tpot_s": 0.00343,
+      "latency_s": 0.89755,
+      "completion_tokens": 256,
+      "prompt_index": 2
+    },
+    {
+      "request_id": "b47ba989",
+      "ttft_s": 0.026179,
+      "tpot_s": 0.003424,
+      "latency_s": 0.899202,
+      "completion_tokens": 256,
+      "prompt_index": 3
+    },
+    {
+      "request_id": "e582b548",
+      "ttft_s": 0.025669,
+      "tpot_s": 0.003425,
+      "latency_s": 0.898991,
+      "completion_tokens": 256,
+      "prompt_index": 4
+    },
+    {
+      "request_id": "7cd16ea5",
+      "ttft_s": 0.024911,
+      "tpot_s": 0.003426,
+      "latency_s": 0.898597,
+      "completion_tokens": 256,
+      "prompt_index": 7
+    },
+    {
+      "request_id": "bc4ad6e2",
+      "ttft_s": 0.025086,
+      "tpot_s": 0.003426,
+      "latency_s": 0.898769,
+      "completion_tokens": 256,
+      "prompt_index": 6
+    },
+    {
+      "request_id": "a13e0576",
+      "ttft_s": 0.015569,
+      "tpot_s": 0.003389,
+      "latency_s": 0.686562,
+      "completion_tokens": 199,
+      "prompt_index": 5
+    },
+    {
+      "request_id": "f7a6d0b3",
+      "ttft_s": 0.01567,
+      "tpot_s": 0.003433,
+      "latency_s": 0.891112,
+      "completion_tokens": 256,
+      "prompt_index": 0
+    },
+    {
+      "request_id": "bb2008a1",
+      "ttft_s": 0.018783,
+      "tpot_s": 0.003435,
+      "latency_s": 0.894602,
+      "completion_tokens": 256,
+      "prompt_index": 1
+    },
+    {
+      "request_id": "5446bf84",
+      "ttft_s": 0.014788,
+      "tpot_s": 0.003437,
+      "latency_s": 0.891277,
+      "completion_tokens": 256,
+      "prompt_index": 2
+    },
+    {
+      "request_id": "0ce89aeb",
+      "ttft_s": 0.018382,
+      "tpot_s": 0.003431,
+      "latency_s": 0.893397,
+      "completion_tokens": 256,
+      "prompt_index": 3
+    },
+    {
+      "request_id": "0b84d305",
+      "ttft_s": 0.016101,
+      "tpot_s": 0.003434,
+      "latency_s": 0.891659,
+      "completion_tokens": 256,
+      "prompt_index": 4
+    },
+    {
+      "request_id": "70132f26",
+      "ttft_s": 0.016065,
+      "tpot_s": 0.003408,
+      "latency_s": 0.687495,
+      "completion_tokens": 198,
+      "prompt_index": 5
+    },
+    {
+      "request_id": "27c82eda",
+      "ttft_s": 0.016173,
+      "tpot_s": 0.003427,
+      "latency_s": 0.890044,
+      "completion_tokens": 256,
+      "prompt_index": 6
+    },
+    {
+      "request_id": "87c05ae7",
+      "ttft_s": 0.016954,
+      "tpot_s": 0.003425,
+      "latency_s": 0.890321,
+      "completion_tokens": 256,
+      "prompt_index": 7
+    },
+    {
+      "request_id": "379ec6a8",
+      "ttft_s": 0.01799,
+      "tpot_s": 0.003418,
+      "latency_s": 0.889572,
+      "completion_tokens": 256,
+      "prompt_index": 0
+    },
+    {
+      "request_id": "7f852b56",
+      "ttft_s": 0.016316,
+      "tpot_s": 0.003439,
+      "latency_s": 0.893162,
+      "completion_tokens": 256,
+      "prompt_index": 1
+    },
+    {
+      "request_id": "8c275ba4",
+      "ttft_s": 0.015799,
+      "tpot_s": 0.00344,
+      "latency_s": 0.893113,
+      "completion_tokens": 256,
+      "prompt_index": 2
+    },
+    {
+      "request_id": "ee45f20c",
+      "ttft_s": 0.014852,
+      "tpot_s": 0.003443,
+      "latency_s": 0.892942,
+      "completion_tokens": 256,
+      "prompt_index": 3
+    },
+    {
+      "request_id": "210ad6f0",
+      "ttft_s": 0.016452,
+      "tpot_s": 0.003436,
+      "latency_s": 0.892759,
+      "completion_tokens": 256,
+      "prompt_index": 4
+    },
+    {
+      "request_id": "2ac926d1",
+      "ttft_s": 0.015436,
+      "tpot_s": 0.003438,
+      "latency_s": 0.892161,
+      "completion_tokens": 256,
+      "prompt_index": 7
+    },
+    {
+      "request_id": "f345a013",
+      "ttft_s": 0.019739,
+      "tpot_s": 0.003434,
+      "latency_s": 0.895335,
+      "completion_tokens": 256,
+      "prompt_index": 6
+    },
+    {
+      "request_id": "39876140",
+      "ttft_s": 0.014499,
+      "tpot_s": 0.0034,
+      "latency_s": 0.687646,
+      "completion_tokens": 199,
+      "prompt_index": 5
+    },
+    {
+      "request_id": "44048602",
+      "ttft_s": 0.015144,
+      "tpot_s": 0.003439,
+      "latency_s": 0.892188,
+      "completion_tokens": 256,
+      "prompt_index": 0
+    },
+    {
+      "request_id": "73242e49",
+      "ttft_s": 0.015455,
+      "tpot_s": 0.00344,
+      "latency_s": 0.892705,
+      "completion_tokens": 256,
+      "prompt_index": 1
+    },
+    {
+      "request_id": "79327bfc",
+      "ttft_s": 0.014835,
+      "tpot_s": 0.003442,
+      "latency_s": 0.892428,
+      "completion_tokens": 256,
+      "prompt_index": 2
+    },
+    {
+      "request_id": "deb14d91",
+      "ttft_s": 0.01376,
+      "tpot_s": 0.003444,
+      "latency_s": 0.89186,
+      "completion_tokens": 256,
+      "prompt_index": 3
+    },
+    {
+      "request_id": "b98d4b91",
+      "ttft_s": 0.015362,
+      "tpot_s": 0.00344,
+      "latency_s": 0.892448,
+      "completion_tokens": 256,
+      "prompt_index": 4
+    },
+    {
+      "request_id": "b162f092",
+      "ttft_s": 0.014123,
+      "tpot_s": 0.003446,
+      "latency_s": 0.892858,
+      "completion_tokens": 256,
+      "prompt_index": 6
+    },
+    {
+      "request_id": "bc34057e",
+      "ttft_s": 0.017075,
+      "tpot_s": 0.003429,
+      "latency_s": 0.689253,
+      "completion_tokens": 197,
+      "prompt_index": 5
+    },
+    {
+      "request_id": "09b9ac91",
+      "ttft_s": 0.015854,
+      "tpot_s": 0.003437,
+      "latency_s": 0.892205,
+      "completion_tokens": 256,
+      "prompt_index": 7
+    },
+    {
+      "request_id": "2dcdb066",
+      "ttft_s": 0.016504,
+      "tpot_s": 0.003434,
+      "latency_s": 0.892119,
+      "completion_tokens": 256,
+      "prompt_index": 0
+    },
+    {
+      "request_id": "f9e97361",
+      "ttft_s": 0.013232,
+      "tpot_s": 0.003434,
+      "latency_s": 0.888958,
+      "completion_tokens": 256,
+      "prompt_index": 1
+    },
+    {
+      "request_id": "b5275625",
+      "ttft_s": 0.016184,
+      "tpot_s": 0.003446,
+      "latency_s": 0.894874,
+      "completion_tokens": 256,
+      "prompt_index": 2
+    },
+    {
+      "request_id": "01522de7",
+      "ttft_s": 0.015621,
+      "tpot_s": 0.003449,
+      "latency_s": 0.894989,
+      "completion_tokens": 256,
+      "prompt_index": 3
+    },
+    {
+      "request_id": "61430dd2",
+      "ttft_s": 0.018937,
+      "tpot_s": 0.003445,
+      "latency_s": 0.897457,
+      "completion_tokens": 256,
+      "prompt_index": 4
+    },
+    {
+      "request_id": "6fe68c60",
+      "ttft_s": 0.016723,
+      "tpot_s": 0.003446,
+      "latency_s": 0.895563,
+      "completion_tokens": 256,
+      "prompt_index": 6
+    },
+    {
+      "request_id": "b0e875a8",
+      "ttft_s": 0.013755,
+      "tpot_s": 0.00345,
+      "latency_s": 0.893475,
+      "completion_tokens": 256,
+      "prompt_index": 7
+    },
+    {
+      "request_id": "9a0c0ec0",
+      "ttft_s": 0.015218,
+      "tpot_s": 0.003449,
+      "latency_s": 0.894774,
+      "completion_tokens": 256,
+      "prompt_index": 0
+    },
+    {
+      "request_id": "c4ad38b0",
+      "ttft_s": 0.015892,
+      "tpot_s": 0.003412,
+      "latency_s": 0.691548,
+      "completion_tokens": 199,
+      "prompt_index": 5
+    },
+    {
+      "request_id": "deef1d26",
+      "ttft_s": 0.012461,
+      "tpot_s": 0.003446,
+      "latency_s": 0.89123,
+      "completion_tokens": 256,
+      "prompt_index": 1
+    },
+    {
+      "request_id": "ea28889d",
+      "ttft_s": 0.015229,
+      "tpot_s": 0.003426,
+      "latency_s": 0.888874,
+      "completion_tokens": 256,
+      "prompt_index": 2
+    },
+    {
+      "request_id": "39fd0f0c",
+      "ttft_s": 0.015072,
+      "tpot_s": 0.003407,
+      "latency_s": 0.883778,
+      "completion_tokens": 256,
+      "prompt_index": 3
+    },
+    {
+      "request_id": "90bc3139",
+      "ttft_s": 0.014283,
+      "tpot_s": 0.003408,
+      "latency_s": 0.883421,
+      "completion_tokens": 256,
+      "prompt_index": 4
+    },
+    {
+      "request_id": "a4abb6cf",
+      "ttft_s": 0.014916,
+      "tpot_s": 0.003388,
+      "latency_s": 0.87892,
+      "completion_tokens": 256,
+      "prompt_index": 6
+    },
+    {
+      "request_id": "75ee5be1",
+      "ttft_s": 0.013777,
+      "tpot_s": 0.00339,
+      "latency_s": 0.878168,
+      "completion_tokens": 256,
+      "prompt_index": 7
+    },
+    {
+      "request_id": "da24fa62",
+      "ttft_s": 0.017134,
+      "tpot_s": 0.00335,
+      "latency_s": 0.680437,
+      "completion_tokens": 199,
+      "prompt_index": 5
+    },
+    {
+      "request_id": "a3b6722b",
+      "ttft_s": 0.016274,
+      "tpot_s": 0.003318,
+      "latency_s": 0.862438,
+      "completion_tokens": 256,
+      "prompt_index": 0
+    },
+    {
+      "request_id": "3be2b872",
+      "ttft_s": 0.016105,
+      "tpot_s": 0.003317,
+      "latency_s": 0.861894,
+      "completion_tokens": 256,
+      "prompt_index": 1
+    },
+    {
+      "request_id": "ee4defec",
+      "ttft_s": 0.015776,
+      "tpot_s": 0.003309,
+      "latency_s": 0.85963,
+      "completion_tokens": 256,
+      "prompt_index": 2
+    },
+    {
+      "request_id": "d2f48eac",
+      "ttft_s": 0.013597,
+      "tpot_s": 0.003297,
+      "latency_s": 0.854312,
+      "completion_tokens": 256,
+      "prompt_index": 3
+    },
+    {
+      "request_id": "427cb6c5",
+      "ttft_s": 0.012528,
+      "tpot_s": 0.003298,
+      "latency_s": 0.853414,
+      "completion_tokens": 256,
+      "prompt_index": 4
+    },
+    {
+      "request_id": "b28417a1",
+      "ttft_s": 0.016466,
+      "tpot_s": 0.00329,
+      "latency_s": 0.855382,
+      "completion_tokens": 256,
+      "prompt_index": 6
+    },
+    {
+      "request_id": "7a67839d",
+      "ttft_s": 0.015934,
+      "tpot_s": 0.00329,
+      "latency_s": 0.854996,
+      "completion_tokens": 256,
+      "prompt_index": 7
+    }
+  ]
+}

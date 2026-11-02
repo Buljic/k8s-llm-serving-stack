@@ -1,0 +1,102 @@
+# Phase 6 experiment: two vLLM instances sharing the one physical RTX 3090
+# through time-slicing. Combined VRAM must fit in 24 GB with headroom:
+# each instance takes 35 percent (about 8.6 GB), 17.2 GB total, leaving
+# about 7 GB for the desktop, the approved Ollama embedder and CUDA overhead.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm-qwen-sliced
+  namespace: llm
+  labels:
+    app: vllm-qwen-sliced
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: vllm-qwen-sliced
+  template:
+    metadata:
+      labels:
+        app: vllm-qwen-sliced
+    spec:
+      runtimeClassName: nvidia
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai@sha256:d825baf9ce4b1b6bfc5ecc7b79880c7e6748c65a72d697ce3d47607aafa84c6e
+          args:
+            - --model
+            - /models/qwen3-0.6b
+            - --served-model-name
+            - qwen3-0.6b
+            - --max-model-len
+            - "4096"
+            - --gpu-memory-utilization
+            - "0.35"
+            - --host
+            - 0.0.0.0
+            - --port
+            - "8000"
+          env:
+            - name: HF_HUB_OFFLINE
+              value: "1"
+            - name: TRANSFORMERS_OFFLINE
+              value: "1"
+          ports:
+            - name: http
+              containerPort: 8000
+          resources:
+            requests:
+              cpu: "3"
+              memory: 12Gi
+            limits:
+              cpu: "6"
+              memory: 20Gi
+              # Shared unit: requests one of the two time-sliced slices of the
+              # single physical GPU.
+              nvidia.com/gpu.shared: 1
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+            failureThreshold: 60
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 15
+            failureThreshold: 6
+          volumeMounts:
+            - name: models
+              mountPath: /models
+              readOnly: true
+      volumes:
+        - name: models
+          hostPath:
+            path: /var/lib/llm-serving-infra/models
+            type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vllm-qwen-sliced
+  namespace: llm
+spec:
+  type: NodePort
+  selector:
+    app: vllm-qwen-sliced
+  ports:
+    - name: http
+      port: 8000
+      targetPort: http
+      nodePort: 30801

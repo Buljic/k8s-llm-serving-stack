@@ -24,7 +24,7 @@ RESP=$(curl -sf "$BASE/v1/chat/completions" \
 echo "$RESP" | python3 -c "import json,sys; d=json.load(sys.stdin); t=d['choices'][0]['message']['content']; assert t.strip(), 'empty completion'; print('  completion:', t[:120].replace(chr(10),' '))"
 
 echo "[4/5] engine /metrics exposes vLLM series"
-kubectl -n llm port-forward svc/vllm-qwen-engine-service 18000:8000 >/dev/null 2>&1 &
+kubectl -n llm port-forward svc/vllm-qwen-engine-service 18000:80 >/dev/null 2>&1 &
 PF=$!
 trap 'kill $PF 2>/dev/null || true' EXIT
 sleep 3
@@ -32,7 +32,7 @@ curl -sf localhost:18000/metrics | grep -q 'vllm:num_requests_running' || { echo
 echo "  ok"
 
 echo "[5/5] Prometheus scraped the engine"
-curl -sf "http://localhost:30900/api/v1/query?query=up{job=~'.*vllm.*'}" \
-  | python3 -c "import json,sys; d=json.load(sys.stdin); assert any(r['value'][1]=='1' for r in d['data']['result']), 'vllm target not up in prometheus'; print('  ok')"
+curl -sf -G "http://localhost:30900/api/v1/query" --data-urlencode "query=up" \
+  | python3 -c "import json,sys; d=json.load(sys.stdin); assert any(r['value'][1]=='1' and 'vllm' in r['metric'].get('job','') for r in d['data']['result']), 'vllm target not up in prometheus'; print('  ok')"
 
 echo "SMOKE TEST PASSED"
