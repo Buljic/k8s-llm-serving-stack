@@ -37,6 +37,36 @@ Notes and deviations:
   nvidia-smi showed 20,727 MiB used and 99 percent utilization during the
   request. Pod startup took about two minutes including CUDA graph capture.
 
+## Phase 4, monitoring
+
+- kube-prometheus-stack (bundled in the chart release) scrapes the engine
+  ServiceMonitor and the router ServiceMonitor. Prometheus on NodePort 30900,
+  Grafana on NodePort 30300 (admin / k8s-serving).
+- Live data observed, 2026-11-02: `vllm:num_requests_running` sampled at 16
+  during a concurrency-16 run with GPU at 100 percent; TTFT histograms
+  (`vllm:time_to_first_token_seconds_*`) populated; 330 engine metric series
+  scraped. Grafana has the two vLLM dashboards plus the Kubernetes fleet
+  dashboards. Waiting stayed at 0 at scrape instants in the 96-concurrency
+  arm; the queueing shows up in latency percentiles instead (p50 1,404 ms).
+
+## Phase 5, production behavior
+
+- Concurrent benchmark arms (scripts/benchmark.py, results committed):
+  conc 4 x 32 reqs: 1,402.7 output tok/s, TTFT p50 12.2 ms, TPOT p50 2.7 ms.
+  conc 16 x 64 reqs: 4,743.1 tok/s, TTFT p50 24.1 ms. conc 16 x 96 reqs x
+  512 tokens: latency p50 770 ms. conc 96: latency p50 1,404 ms, p95 2,475 ms.
+- Pod failure: engine pod deleted 19:40:47; router returned a clean
+  "temporarily unavailable" during the gap; replacement ready in about 34 s;
+  requests succeeded after. Startup probe events visible on the new pod.
+- Rolling update: maxNumSeqs 64 to 32 via helm upgrade; terminate-first
+  rollout completed in about 79 s (that downtime is the price of having one GPU);
+  new pod serves with `--max-num-seqs 32`.
+- Service discovery: the router lists engine pods through the Kubernetes API
+  with a namespace-scoped RBAC role; no Pod IPs appear in any config.
+- Simulated multi-node: attempted and rolled back, see
+  docs/SIMULATED_NODE.md. Not feasible side-by-side on this host; no GPUs
+  were implied or added.
+
 ## Phase 3, production stack
 
 - Helm release `vllm` in namespace `llm` from the vLLM production stack chart
