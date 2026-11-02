@@ -37,10 +37,27 @@ Notes and deviations:
   nvidia-smi showed 20,727 MiB used and 99 percent utilization during the
   request. Pod startup took about two minutes including CUDA graph capture.
 
-## Phase 3, production-style stack: in progress
+## Phase 3, production stack
 
-Helm values for the vLLM production stack chart 0.1.13 (commit
-e8cb4959ebfa333714ef468a3aefe158a65a09e6) written; router pinned to
-lmcache/lmstack-router v0.1.13 by digest; kube-prometheus-stack bundled as the
-monitoring layer. Deploy script patches engine probes the chart does not
-render.
+- Helm release `vllm` in namespace `llm` from the vLLM production stack chart
+  0.1.13 at commit e8cb4959ebfa333714ef468a3aefe158a65a09e6, deployed by
+  scripts/deploy-stack.sh.
+- Router lmcache/lmstack-router v0.1.13 (digest-pinned) discovers the engine
+  pod through the Kubernetes API (RBAC role `vllm-reader`) and serves the
+  OpenAI API on NodePort 30080. Engine rollout strategy terminate-first
+  (maxSurge 0) because one GPU cannot host the surged replica.
+- The chart renders no probes on the engine; deploy-stack.sh patches
+  startup/readiness/liveness probes on /health after install, and deletes the
+  engine deployment before upgrade because Helm 4 server-side apply conflicts
+  with kubectl-owned patched fields.
+- Verification, 2026-11-02: chat completion through the router returned
+  generated tokens; Prometheus scrapes both engine (330 series) and router
+  targets; Grafana has the vLLM dashboards loaded.
+- Deviation from the phase plan: the standalone Phase 2 Deployment was removed
+  from the cluster when the stack took over the GPU; its manifests stay in the
+  repo as the Phase 2 record.
+
+Two problems cost real time, both written up below:
+Fedora firewalld blocked pod-to-pod traffic to the pod CIDR (fixed by trusting
+cni0/flannel.1/10.42.0.0/16), and the default surge-first rollout deadlocked
+on a single GPU.

@@ -1,0 +1,120 @@
+# Values for the vLLM production stack chart (vllm-stack 0.1.13,
+# github.com/vllm-project/production-stack at commit
+# e8cb4959ebfa333714ef468a3aefe158a65a09e6).
+# Deployed into namespace llm by scripts/deploy-stack.sh.
+
+servingEngineSpec:
+  runtimeClassName: "nvidia"
+  imagePullPolicy: IfNotPresent
+  # One GPU on one node: the replacement pod can only schedule after the old
+  # one releases the card, so roll terminate-first.
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  serviceMonitor:
+    enabled: true
+  modelSpec:
+    - name: qwen
+      repository: "vllm/vllm-openai"
+      tag: "v0.33.0"
+      # Local path inside the container, mounted from the host below.
+      modelURL: "/models/qwen3-0.6b"
+      replicaCount: 1
+      requestCPU: 4
+      requestMemory: 16Gi
+      requestGPU: 1
+      requestGPUType: "nvidia.com/gpu"
+      limitCPU: 8
+      limitMemory: 32Gi
+      # The chart wants a PVC mounted at /data even for local models; keep it
+      # small, the real weights come from the hostPath volume.
+      pvcStorage: "1Gi"
+      storageClass: "local-path"
+      shmSize: "8Gi"
+      enableLoRA: false
+      lmcacheConfig:
+        enabled: false
+      keda:
+        enabled: false
+      env:
+        - name: HF_HUB_OFFLINE
+          value: "1"
+        - name: TRANSFORMERS_OFFLINE
+          value: "1"
+      extraVolumes:
+        - name: host-models
+          hostPath:
+            path: /var/lib/llm-serving-infra/models
+            type: Directory
+      extraVolumeMounts:
+        - name: host-models
+          mountPath: /models
+          readOnly: true
+      vllmConfig:
+        # vLLM 0.33 has no v0 engine; must stay "0".
+        v0: "0"
+        maxModelLen: 8192
+        dtype: "bfloat16"
+        tensorParallelSize: 1
+        maxNumSeqs: 64
+        gpuMemoryUtilization: 0.85
+        enablePrefixCaching: true
+        enableChunkedPrefill: true
+        runner: "auto"
+        extraArgs:
+          - "--served-model-name"
+          - "qwen3-0.6b"
+
+routerSpec:
+  repository: "lmcache/lmstack-router"
+  tag: "v0.1.13"
+  imagePullPolicy: IfNotPresent
+  serviceType: NodePort
+  servicePort: 80
+  nodePort: 30080
+  serviceMonitor:
+    enabled: true
+  # CPU-only tier: small requests, hard ceiling, no GPU.
+  resources:
+    requests:
+      cpu: "1"
+      memory: 1Gi
+    limits:
+      cpu: "2"
+      memory: 2Gi
+
+grafanaDashboards:
+  enabled: true
+
+kube-prometheus-stack:
+  enabled: true
+  alertmanager:
+    enabled: false
+  # k3s does not run these as separate schedulable components.
+  kubeControllerManager:
+    enabled: false
+  kubeScheduler:
+    enabled: false
+  kubeEtcd:
+    enabled: false
+  prometheus:
+    enabled: true
+    service:
+      type: NodePort
+      nodePort: 30900
+    prometheusSpec:
+      retention: 3d
+      resources:
+        requests:
+          cpu: "1"
+          memory: 2Gi
+        limits:
+          memory: 4Gi
+  grafana:
+    enabled: true
+    adminPassword: "k8s-serving"
+    service:
+      type: NodePort
+      nodePort: 30300
