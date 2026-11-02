@@ -49,10 +49,15 @@ Notes and deviations:
   vLLM instances at 0.35 utilization each ran on the one physical GPU;
   `nvidia-smi` showed both compute processes on device 0, 12.8 GB used.
 - Measured comparison (concurrency 16, 96 requests, 256 max tokens):
-  single instance 4,439.4 tok/s, TPOT p50 3.4 ms; sliced pair 2,375.6
-  tok/s, TPOT p50 6.5 ms. Sharing halves throughput and doubles TPOT.
-- Experiment fully reverted; node back to `nvidia.com/gpu: 1`, engine
-  serving.
+  single instance 4,439.4 tok/s, TPOT p50 3.4 ms; time-sliced pair 2,375.6
+  tok/s, TPOT p50 6.5 ms; HAMi software-vGPU pair 2,377.1 tok/s, TPOT p50
+  6.5 ms with a hard 10 GB ceiling per pod. Sharing halves throughput and
+  doubles TPOT in both modes.
+- Software vGPU extension: HAMi chart 2.10.0 installed, two vLLM pods ran
+  with enforced 10240 MiB / 50 percent compute fractions; `nvidia-smi`
+  inside a pod reported a 10240 MiB card. Fully uninstalled, node back to
+  `nvidia.com/gpu: 1`, engine serving, smoke test green.
+- Experiments fully reverted after each run.
 
 ## Stability incidents worth remembering
 

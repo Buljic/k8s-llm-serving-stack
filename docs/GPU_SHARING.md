@@ -20,60 +20,96 @@ No MIG-supported devices found.
 `nvidia-smi` inside a GPU container shows the same `MIG M. N/A`. There is
 nothing to configure and no fake substitute is presented in this repo.
 
-## What the 3090 does support: time-slicing
+## What the 3090 does support: time-slicing and software vGPU
 
-The NVIDIA device plugin can advertise N time-sliced units per physical
-GPU. Pods request a unit with `nvidia.com/gpu.shared: 1`. This is temporal
-sharing: the GPU scheduler interleaves kernels from all tenants. It is not
-isolation:
+Two real sharing modes exist. Neither is MIG.
 
-- All tenants see the FULL card. Every workload must cap its own memory
-  (for vLLM, `--gpu-memory-utilization`) or they OOM each other.
-- One tenant at full compute slows every other tenant.
-- There is no memory or fault boundary. A tenant that corrupts the card
-  takes everyone with it.
+**Time-slicing** (NVIDIA device plugin): the plugin advertises N units per
+physical GPU, pods request `nvidia.com/gpu.shared: 1`, and the GPU
+scheduler interleaves kernels from all tenants. All tenants still see the
+FULL card: every workload must cap its own memory (for vLLM,
+`--gpu-memory-utilization`) or they OOM each other. No memory or fault
+boundary exists.
 
-Config used (k8s/device-plugin-timesliced.yaml): a ConfigMap with
-`sharing.timeSlicing.replicas: 2`, the plugin started with
+**Software vGPU** (HAMi, open source): a device plugin plus scheduler
+extender plus a CUDA interception library. Pods request a device plus
+fractions (`nvidia.com/gpumem: 10240`, `nvidia.com/gpucores: 50`), and the
+library enforces those fractions inside the container. Verified on this
+machine: `nvidia-smi` inside a pod reports `memory.total = 10240 MiB` on a
+card that physically has 24576 MiB. That is enforcement, not hardware
+partitioning: the limit holds because the library intercepts every CUDA
+allocation, and a bypass is possible in principle. MIG enforces in silicon;
+HAMi enforces in software.
+
+Config used for time-slicing (k8s/device-plugin-timesliced.yaml): a
+ConfigMap with `sharing.timeSlicing.replicas: 2`, the plugin started with
 `--config-file`, node then advertises `nvidia.com/gpu.shared: 2` next to
 the untouched `nvidia.com/gpu: 1`.
 
-## The experiment
+HAMi install for the experiment (not kept running, fully reverted):
 
-Two vLLM instances, each `--gpu-memory-utilization 0.35` (about 8.6 GB
-budget each, 17.2 GB combined of 24 GB, leaving headroom for the desktop,
-an approved Ollama embedding service and CUDA overhead), deployed via
-k8s/vllm-sliced.yaml with 2 replicas behind one Service (NodePort 30801).
-Both pods land on the same node and share GPU 0; `nvidia-smi` showed two
-vLLM compute processes on the one device.
+```
+helm repo add hami https://project-hami.github.io/HAMi/
+helm install hami hami/hami --version 2.10.0 -n kube-system \
+  --set devicePlugin.runtimeClassName=nvidia
+kubectl label node fedora gpu=on        # the plugin's node selector
+# pods then set schedulerName: hami-scheduler and request the fractions,
+# see k8s/vllm-vgpu.yaml
+```
 
-Same benchmark shape on both arms (concurrency 16, 96 requests, 256 max
+## The experiments
+
+Experiment 1, time-slicing: two vLLM instances, each
+`--gpu-memory-utilization 0.35` (about 8.6 GB budget each, 17.2 GB combined
+of 24 GB), deployed via k8s/vllm-sliced.yaml, 2 replicas behind one Service
+(NodePort 30801). `nvidia-smi` on the host showed two vLLM compute
+processes on the one device.
+
+Experiment 2, software vGPU: the same shape through HAMi (chart 2.10.0),
+each pod hard-limited to 10240 MiB and 50 percent compute
+(k8s/vllm-vgpu.yaml, NodePort 30802). `nvidia-smi` inside each pod reported
+a 10240 MiB card, which is the enforcement working.
+
+Same benchmark shape on all arms (concurrency 16, 96 requests, 256 max
 tokens, full detail in docs/BENCHMARKS.md):
 
 | Arm | Output tok/s | TTFT p50 (ms) | TPOT p50 (ms) | Latency p50 (ms) |
 |---|---|---|---|---|
 | Single instance, whole GPU | 4,439.4 | 16.6 | 3.4 | 891.7 |
 | Two time-sliced instances | 2,375.6 | 20.7 | 6.5 | 1,669.3 |
+| Two HAMi vGPU instances (10 GB, 50 percent each) | 2,377.1 | 20.4 | 6.5 | 1,666.0 |
 
 ## What the numbers say
 
-- Aggregate throughput DROPPED to about half. Two engines timesharing one
-  card do not add compute; kernel interleaving and duplicated per-instance
-  overhead subtract from it.
-- TPOT roughly doubled: when both instances decode simultaneously, each
-  gets about half the SM time.
-- The win of time-slicing is not speed. It is tenancy: two teams, two model
-  variants, or a canary and a stable release can coexist on one card with
-  Kubernetes scheduling them, at a predictable throughput tax. For real
-  multi-tenancy with isolation, the hardware answer is MIG (unavailable
-  here) or separate GPUs.
+- Aggregate throughput DROPPED to about half in both sharing modes. Two
+  engines on one card do not add compute; interleaving and duplicated
+  per-instance overhead subtract from it.
+- TPOT roughly doubled in both modes: when both instances decode
+  simultaneously, each gets about half the SM time. HAMi's 50 percent
+  compute quota codifies that split in the scheduler.
+- Time-slicing and HAMi measured identically on speed. The difference is
+  the contract: time-slicing trusts workloads to stay inside the card;
+  HAMi enforces a memory ceiling and a compute share per pod. Neither
+  provides a fault boundary.
+- The win of sharing is tenancy, not speed: two teams, two model variants,
+  or a canary and a stable release coexist on one card with Kubernetes
+  scheduling them, at a predictable throughput tax. For multi-tenancy with
+  hardware isolation the answer is MIG (not on this card) or separate GPUs.
 
 ## Revert
 
 ```bash
+# time-slicing
 kubectl delete -f k8s/device-plugin-timesliced.yaml
-kubectl apply -f k8s/device-plugin.yaml   # plain single-GPU plugin
 kubectl delete -f k8s/vllm-sliced.yaml
+
+# HAMi
+helm uninstall hami -n kube-system
+kubectl label node fedora gpu-
+kubectl delete -f k8s/vllm-vgpu.yaml
+
+# back to the standard lab
+kubectl apply -f k8s/device-plugin.yaml
 kubectl -n llm scale deployment vllm-qwen-deployment-vllm --replicas=1
 ```
 

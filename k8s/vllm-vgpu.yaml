@@ -1,0 +1,111 @@
+# Phase 6 extension: software vGPU via HAMi. Two vLLM instances on the one
+# physical 3090 with SOFTWARE-ENFORCED fractions: 10 GB of VRAM and 50 percent
+# of compute each. This is library-level enforcement (CUDA call interception),
+# NOT hardware partitioning. It is the closest MIG-like behavior the 3090
+# can run. Requires the hami release and the gpu=on node label; the
+# hami-scheduler binds these pods.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm-qwen-vgpu
+  namespace: llm
+  labels:
+    app: vllm-qwen-vgpu
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: vllm-qwen-vgpu
+  template:
+    metadata:
+      labels:
+        app: vllm-qwen-vgpu
+    spec:
+      schedulerName: hami-scheduler
+      runtimeClassName: nvidia
+      containers:
+        - name: vllm
+          image: vllm/vllm-openai@sha256:d825baf9ce4b1b6bfc5ecc7b79880c7e6748c65a72d697ce3d47607aafa84c6e
+          args:
+            - --model
+            - /models/qwen3-0.6b
+            - --served-model-name
+            - qwen3-0.6b
+            - --max-model-len
+            - "4096"
+            # 9.6 GB of the card, under the 10 GB HAMi limit for this pod.
+            - --gpu-memory-utilization
+            - "0.4"
+            - --host
+            - 0.0.0.0
+            - --port
+            - "8000"
+          env:
+            - name: HF_HUB_OFFLINE
+              value: "1"
+            - name: TRANSFORMERS_OFFLINE
+              value: "1"
+          ports:
+            - name: http
+              containerPort: 8000
+          resources:
+            requests:
+              cpu: "3"
+              memory: 12Gi
+              # One of HAMi's ten virtual device units; the fractions below
+              # are what actually constrain this pod.
+              nvidia.com/gpu: 1
+              nvidia.com/gpumem: 10240
+              nvidia.com/gpucores: 50
+            limits:
+              cpu: "6"
+              memory: 20Gi
+              nvidia.com/gpu: 1
+              nvidia.com/gpumem: 10240
+              nvidia.com/gpucores: 50
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+            failureThreshold: 60
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 15
+            failureThreshold: 6
+          volumeMounts:
+            - name: models
+              mountPath: /models
+              readOnly: true
+      volumes:
+        - name: models
+          hostPath:
+            path: /var/lib/llm-serving-infra/models
+            type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vllm-qwen-vgpu
+  namespace: llm
+spec:
+  type: NodePort
+  selector:
+    app: vllm-qwen-vgpu
+  ports:
+    - name: http
+      port: 8000
+      targetPort: http
+      nodePort: 30802

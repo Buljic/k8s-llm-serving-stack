@@ -19,6 +19,7 @@ sliced Service (two time-sliced instances).
 | single instance, concurrency 96, 96 requests, 256 max tokens | 96/96 | 9533.814 | 151.1 | 1404.8 | 4.9 | 1404.4 | 2474.9 |
 | single instance, concurrency 16, 96 requests, 256 max tokens | 96/96 | 4439.409 | 16.6 | 41.5 | 3.4 | 891.7 | 914.3 |
 | two time-sliced instances, concurrency 16, 96 requests, 256 max tokens | 96/96 | 2375.552 | 20.7 | 48.8 | 6.5 | 1669.3 | 1700.7 |
+| two HAMi software-vGPU instances (10 GB, 50 percent compute each), concurrency 16, 96 requests, 256 max tokens | 96/96 | 2377.086 | 20.4 | 48.7 | 6.5 | 1666.0 | 1707.4 |
 
 What the table shows:
 

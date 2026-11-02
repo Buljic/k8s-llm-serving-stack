@@ -42,8 +42,8 @@ docs/STATUS.md has the per-phase record with the date each claim was
 checked. The short version: tokens came back from vLLM on the card on
 2026-10-20; the router, the production stack and the failure drills ran on
 2026-11-02, including an engine pod killed and recovered in about 34
-seconds and a terminate-first rolling update; the time-slicing
-comparison ran on 2026-11-02. The last full smoke test was on 2026-11-02.
+seconds and a terminate-first rolling update; the time-slicing and vGPU
+comparisons also ran on 2026-11-02. The last full smoke test was on 2026-11-02.
 
 ## What I did not do
 

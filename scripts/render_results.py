@@ -19,6 +19,7 @@ ORDER = [
     "baseline-conc96.json",
     "baseline-single-final.json",
     "sliced-conc16.json",
+    "vgpu-conc16.json",
 ]
 
 NAMES = {
@@ -29,6 +30,7 @@ NAMES = {
     "baseline-conc96.json": "single instance, concurrency 96, 96 requests, 256 max tokens",
     "baseline-single-final.json": "single instance, concurrency 16, 96 requests, 256 max tokens",
     "sliced-conc16.json": "two time-sliced instances, concurrency 16, 96 requests, 256 max tokens",
+    "vgpu-conc16.json": "two HAMi software-vGPU instances (10 GB, 50 percent compute each), concurrency 16, 96 requests, 256 max tokens",
 }
 
 
