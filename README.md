@@ -45,6 +45,12 @@ checked. The short version: tokens came back from vLLM on the card on
 seconds and a terminate-first rolling update; the time-slicing and vGPU
 comparisons also ran on 2026-11-02. The last full smoke test was on 2026-11-02.
 
+Screenshots of the live dashboards, taken while the stack was serving
+traffic:
+
+![vLLM Dashboard](docs/images/grafana-vllm-dashboard.png)
+![vLLM Inference Observability](docs/images/grafana-inference-observability.png)
+
 ## What I did not do
 
 - There is one GPU. Scaling the inference tier means a smaller model,
